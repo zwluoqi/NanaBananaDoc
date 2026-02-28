@@ -225,3 +225,5 @@ generateImage();
 
 如有 API 集成相关问题，请通过以下方式联系我们：
 - 📧 API 技术支持：[support@nananobanana.com](mailto:support@nananobanana.com)
+- 📧 API 技术支持：[guimei0sgsg@gmail.com](mailto:guimei0sgsg@gmail.com)
+
