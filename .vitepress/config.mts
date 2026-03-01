@@ -10,7 +10,7 @@ export default defineConfig({
     siteTitle: 'Nano Banana',
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/zwluoqi/NanoBananaDoc' }
+      { icon: 'github', link: 'https://github.com/nanobanana/NanoBananaDoc' }
     ],
 
     footer: {
