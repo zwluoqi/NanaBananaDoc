@@ -1,33 +1,33 @@
-# Nano Banana API 文档
+# Nano Banana API Documentation
 
-通过 REST API 接口实现 AI 图像生成的程序化调用。支持文生图、图生图等多种生成模式。
+Programmatically generate AI images via REST API. Supports text-to-image, image-to-image, and three request modes: sync, stream, and async.
 
-## 1. 快速开始
+## 1. Quick Start
 
-### 第一步：获取 API Key
-前往官网 **设置 -> API 密钥** 页面创建 API Key。
+### Step 1: Get an API Key
+Go to **Settings -> API Keys** on the website to create an API Key.
 
-### 第二步：发送请求
+### Step 2: Send a Request
 ```sh
 curl -X POST https://www.nananobanana.com/api/v1/generate \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer nb_your_api_key_here" \
   -d '{
-    "prompt": "一只可爱的橘猫坐在窗台上",
+    "prompt": "A cute orange cat sitting on a windowsill",
     "selectedModel": "nano-banana"
   }'
 ```
 
-## 2. 认证方式
+## 2. Authentication
 
-所有 API 请求需要在 HTTP Header 中携带 API Key 进行认证：
+All API requests require an API Key in the HTTP Header:
 
 ```http
 Authorization: Bearer nb_your_api_key_here
 ```
 
 ::: warning
-⚠️ API Key 仅在创建时显示一次，请妥善保管。每个用户最多可创建 5 个 API Key。
+⚠️ The API Key is only displayed once when created. Please keep it safe. Each user can create up to 5 API Keys.
 :::
 
 ## 3. Base URL
@@ -36,51 +36,52 @@ Authorization: Bearer nb_your_api_key_here
 https://www.nananobanana.com/api/v1
 ```
 
-## 4. API 接口
+## 4. Generate Endpoint
 
 ### POST `/api/v1/generate`
-生成图像。支持文生图和图生图两种模式。
+Generate an image. Supports text-to-image and image-to-image modes, with three request modes.
 
-**请求参数**
+**Request Parameters**
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|:---:|------|
-| `prompt` | `string` | **✓** | 图像生成提示词 |
-| `selectedModel` | `string` | - | 模型名称，默认 `"nano-banana"` |
-| `referenceImageUrls` | `string[]` | **\*** | 参考图片 URL 数组（图生图时必填） |
-| `aspectRatio` | `string` | - | 宽高比，默认 `"default"` |
+| Parameter | Type | Required | Description |
+|-----------|------|:--------:|-------------|
+| `prompt` | `string` | **✓** | Image generation prompt |
+| `selectedModel` | `string` | - | Model name, defaults to `"nano-banana"` |
+| `referenceImageUrls` | `string[]` | **\*** | Reference image URL array (required for image-to-image) |
+| `aspectRatio` | `string` | - | Aspect ratio, defaults to `"default"` |
+| `mode` | `string` | - | Request mode: `"sync"` (default), `"stream"`, `"async"` |
 
-**成功响应 (`200 OK`)**
+::: tip
+The system automatically determines the generation type (text-to-image / image-to-image) based on whether `referenceImageUrls` is provided.
+:::
 
-```json
-{
-  "success": true,
-  "generationId": "clxx...",
-  "imageUrls": ["https://..."],
-  "creditsUsed": 1,
-  "remainingCredits": 99
-}
-```
+### Three Request Modes
 
-**错误响应**
+Choose the request mode that best fits your use case:
 
-- `401 Unauthorized`: API Key 无效或缺失
-- `400 Bad Request`: 请求参数错误
-- `402 Payment Required`: 积分不足
-- `500 Internal Server Error`: 服务器内部错误
+| Feature | Sync `sync` | Stream `stream` | Async `async` |
+|---------|:-----------:|:---------------:|:-------------:|
+| Response | Wait for completion | SSE real-time push | Immediate return, poll for result |
+| Progress feedback | ❌ | ✅ | ❌ |
+| Best for | Simple integrations, scripts | Frontend real-time display | Batch tasks, background processing |
+| Timeout risk | Higher (waits for completion) | Lower (persistent connection) | None (returns immediately) |
+| Complexity | ⭐ | ⭐⭐ | ⭐⭐ |
 
----
+👉 See detailed documentation and code examples for each mode:
+- [Sync Mode](/en/api-sync) — Simplest integration
+- [Stream Mode](/en/api-stream) — Real-time progress updates
+- [Async Mode](/en/api-async) — Background processing with polling
 
 ### GET `/api/v1/generate`
-查询生成记录的状态和结果。
+Query the status and result of a generation record. Typically used with async mode.
 
-**查询参数**
+**Query Parameters**
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `id` | `string` | 生成记录 ID |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `id` | `string` | Generation record ID |
 
-**响应**
+**Response**
 
 ```json
 {
@@ -96,12 +97,22 @@ https://www.nananobanana.com/api/v1
 }
 ```
 
+**`processingStatus` Values**
+
+| Status | Description |
+|--------|-------------|
+| `processing` | Generation in progress |
+| `completed` | Generation complete, `outputImageUrls` contains result images |
+| `failed` | Generation failed, `errorMessage` contains error details |
+
 ---
 
-### GET `/api/v1/models`
-获取可用的图像生成模型列表。无需认证。
+## 5. Other Endpoints
 
-**响应**
+### GET `/api/v1/models`
+Get the list of available image generation models. No authentication required.
+
+**Response**
 
 ```json
 {
@@ -121,9 +132,9 @@ https://www.nananobanana.com/api/v1
 ---
 
 ### GET `/api/v1/credits`
-查询当前账户可用积分余额。
+Query the current account's available credit balance.
 
-**响应**
+**Response**
 
 ```json
 {
@@ -133,96 +144,28 @@ https://www.nananobanana.com/api/v1
 }
 ```
 
-## 5. 代码示例
+## 6. Common Error Responses
 
-::: code-group
+| Status Code | Description |
+|-------------|-------------|
+| `400 Bad Request` | Invalid request parameters (e.g., missing `prompt`, invalid `mode` value) |
+| `401 Unauthorized` | Invalid or missing API Key |
+| `402 Payment Required` | Insufficient credits |
+| `403 Forbidden` | API access is not enabled for the account |
+| `500 Internal Server Error` | Internal server error |
+| `503 Service Unavailable` | Server busy (async mode only) |
 
-```python [Python]
-import requests
+## 7. Important Notes
 
-API_KEY = "nb_your_api_key_here"
-BASE_URL = "https://www.nananobanana.com/api/v1"
+- API calls do not perform safety keyword checks. Please ensure your input content is compliant.
+- Credits consumed per generation depend on the selected model. The default model costs 1 credit.
+- In image-to-image mode, each additional reference image costs 1 extra credit.
+- Generated image URLs are valid for 15 days. Please download and save them promptly.
+- Each user can create up to 5 API Keys.
+- API access must be enabled for your account (automatically enabled when cumulative recharge exceeds ¥1000, or contact admin for manual activation).
 
-# Text-to-Image 文生图示例
-response = requests.post(
-    f"{BASE_URL}/generate",
-    headers={
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
-    },
-    json={
-        "prompt": "一只可爱的橘猫坐在窗台上，阳光洒在它身上",
-        "selectedModel": "nano-banana"
-    }
-)
+## 8. Contact Us
 
-result = response.json()
-if result.get("success"):
-    print("Image URLs:", result["imageUrls"])
-    print("Credits used:", result["creditsUsed"])
-else:
-    print("Error:", result.get("error"))
-
-# Image-to-Image 图生图示例
-response_img2img = requests.post(
-    f"{BASE_URL}/generate",
-    headers={
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
-    },
-    json={
-        "prompt": "将背景替换为海滩，保持人物不变",
-        "referenceImageUrls": ["https://example.com/your-image.jpg"],
-        "selectedModel": "nano-banana"
-    }
-)
-
-result_img2img = response_img2img.json()
-print("Img2Img Result:", result_img2img)
-```
-
-```javascript [Node.js]
-const API_KEY = "nb_your_api_key_here";
-const BASE_URL = "https://www.nananobanana.com/api/v1";
-
-// Text-to-Image 文生图示例
-async function generateImage() {
-  const response = await fetch(`${BASE_URL}/generate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${API_KEY}`
-    },
-    body: JSON.stringify({
-      prompt: "一只可爱的橘猫坐在窗台上",
-      selectedModel: "nano-banana"
-    })
-  });
-
-  const result = await response.json();
-  if (result.success) {
-    console.log("Image URLs:", result.imageUrls);
-    console.log("Credits used:", result.creditsUsed);
-  } else {
-    console.error("Error:", result.error);
-  }
-}
-
-generateImage();
-```
-
-:::
-
-## 6. 注意事项
-
-- API 调用不进行安全关键词检查，请确保输入内容合规。
-- 每次生成消耗的积分取决于选择的模型，默认模型消耗 1 积分。
-- 图生图模式中，每增加一张参考图片额外消耗 1 积分。
-- 生成的图片 URL 有效期为 15 天，请及时下载保存。
-- 每个用户最多可创建 5 个 API Key。
-
-## 7. 联系我们
-
-如有 API 集成相关问题，请通过以下方式联系我们：
-- 📧 API 技术支持：[support@nananobanana.com](mailto:support@nananobanana.com)
-- 📧 API 技术支持：[guimei0sgsg@gmail.com](mailto:guimei0sgsg@gmail.com)
+For API integration questions, please reach out to us:
+- 📧 API Support: [support@nananobanana.com](mailto:support@nananobanana.com)
+- 📧 API Support: [guimei0sgsg@gmail.com](mailto:guimei0sgsg@gmail.com)

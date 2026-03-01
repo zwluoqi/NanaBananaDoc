@@ -40,7 +40,10 @@ export default defineConfig({
             {
               text: '开发者文档',
               items: [
-                { text: 'API 使用文档', link: '/api' }
+                { text: 'API 概览', link: '/api' },
+                { text: '同步请求模式', link: '/api-sync' },
+                { text: '流式请求模式', link: '/api-stream' },
+                { text: '异步请求模式', link: '/api-async' },
               ]
             }
           ]
@@ -72,7 +75,10 @@ export default defineConfig({
             {
               text: 'Developer Docs',
               items: [
-                { text: 'API Usage', link: '/en/api' }
+                { text: 'API Overview', link: '/en/api' },
+                { text: 'Sync Mode', link: '/en/api-sync' },
+                { text: 'Stream Mode', link: '/en/api-stream' },
+                { text: 'Async Mode', link: '/en/api-async' },
               ]
             }
           ]
