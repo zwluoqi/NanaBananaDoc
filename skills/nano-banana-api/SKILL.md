@@ -3,7 +3,6 @@ name: nano-banana-api
 description: Generate images through the Nano Banana REST API and help agents integrate or operate the service safely. Use when a task involves text-to-image, image-to-image, listing models, checking credits, choosing between sync/stream/async generation, polling generation status, or producing reproducible API calls/scripts for Nano Banana.
 metadata:
   openclaw:
-    emoji: "🍌"
     homepage: "https://www.nananobanana.com"
     primaryEnv: "NANO_BANANA_API_KEY"
     requires:
