@@ -32,6 +32,7 @@ export default defineConfig({
         nav: [
           { text: '首页', link: '/' },
           { text: 'API 文档', link: '/api' },
+          { text: 'Agent Skill', link: '/skills' },
           { text: '官网', link: 'https://www.nananobanana.com' }
         ],
 
@@ -44,6 +45,7 @@ export default defineConfig({
                 { text: '同步请求模式', link: '/api-sync' },
                 { text: '流式请求模式', link: '/api-stream' },
                 { text: '异步请求模式', link: '/api-async' },
+                { text: 'Agent Skill', link: '/skills' },
               ]
             }
           ]
@@ -67,6 +69,7 @@ export default defineConfig({
         nav: [
           { text: 'Home', link: '/en/' },
           { text: 'API Docs', link: '/en/api' },
+          { text: 'Agent Skill', link: '/en/skills' },
           { text: 'Official Website', link: 'https://www.nananobanana.com' }
         ],
 
@@ -79,6 +82,7 @@ export default defineConfig({
                 { text: 'Sync Mode', link: '/en/api-sync' },
                 { text: 'Stream Mode', link: '/en/api-stream' },
                 { text: 'Async Mode', link: '/en/api-async' },
+                { text: 'Agent Skill', link: '/en/skills' },
               ]
             }
           ]

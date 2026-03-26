@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import sys
 import time
 import urllib.error
@@ -15,6 +16,11 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_BASE_URL = "https://www.nananobanana.com/api/v1"
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/136.0.0.0 Safari/537.36 NanoBananaSkill/0.1"
+)
 
 
 class ApiError(Exception):
@@ -36,7 +42,7 @@ def build_headers(
     require_auth: bool = False,
     include_json: bool = False,
 ) -> dict[str, str]:
-    headers: dict[str, str] = {}
+    headers: dict[str, str] = {"User-Agent": DEFAULT_USER_AGENT}
     if include_json:
         headers["Content-Type"] = "application/json"
 
@@ -110,7 +116,9 @@ def download_images(image_urls: list[str], download_dir: str, prefix: str) -> li
     for index, image_url in enumerate(image_urls, start=1):
         filename = f"{prefix}-{index}{infer_extension(image_url)}"
         destination = target_dir / filename
-        urllib.request.urlretrieve(image_url, destination)
+        request = urllib.request.Request(image_url, headers={"User-Agent": DEFAULT_USER_AGENT})
+        with urllib.request.urlopen(request, timeout=120) as response, destination.open("wb") as fh:
+            shutil.copyfileobj(response, fh)
         downloaded.append(str(destination))
 
     return downloaded

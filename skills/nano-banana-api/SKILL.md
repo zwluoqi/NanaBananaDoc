@@ -13,6 +13,8 @@ metadata:
 
 Use this skill when an agent needs to call Nano Banana directly instead of only editing docs.
 
+Official website: `https://www.nananobanana.com`
+
 ## Quick Start
 
 Set an API key with `NANO_BANANA_API_KEY` or `NB_API_KEY`.

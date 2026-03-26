@@ -13,6 +13,9 @@ hero:
       text: 查看 API 文档
       link: /api
     - theme: alt
+      text: Agent Skill
+      link: /skills
+    - theme: alt
       text: 访问官网
       link: https://www.nananobanana.com
 
@@ -29,4 +32,7 @@ features:
   - title: 完善的调用管理
     details: 随时查询使用状态和积分余额，掌握每一次 API 调用的成本。
     icon: 📊
+  - title: 可嵌入 Agent Skill
+    details: 提供独立 skill，可发布到 skills.sh、ClawHub 等技能生态中复用。
+    icon: 🤖
 ---

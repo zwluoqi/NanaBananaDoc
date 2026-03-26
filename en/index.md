@@ -13,6 +13,9 @@ hero:
       text: View API Docs
       link: /en/api
     - theme: alt
+      text: Agent Skill
+      link: /en/skills
+    - theme: alt
       text: Official Website
       link: https://www.nananobanana.com
 
@@ -29,4 +32,7 @@ features:
   - title: Comprehensive Usage Management
     details: Track usage and balance anytime, keep your API costs under control.
     icon: 📊
+  - title: Reusable Agent Skill
+    details: Includes a standalone skill that can be reused in ecosystems like skills.sh and ClawHub.
+    icon: 🤖
 ---

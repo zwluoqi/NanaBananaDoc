@@ -151,3 +151,4 @@ Completion example:
 - Image-to-image inputs increase credit consumption.
 - API access may require account enablement in addition to having a valid key.
 - The published docs repo is useful for examples, but live endpoint behavior may change first. Verify unstable values through the API.
+- Some CDN-protected image URLs may reject the default Python `urllib` user agent with `403`. The bundled CLI sends an explicit browser-like `User-Agent` for API requests and image downloads to avoid that failure mode.
