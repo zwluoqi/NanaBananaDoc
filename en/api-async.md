@@ -353,6 +353,6 @@ for task_id, urls in results.items():
 ::: warning
 - Credits are deducted when the task is submitted, not when generation completes.
 - If the server is busy (503), credits are automatically refunded.
-- When generation fails, credits are **not** automatically refunded (API calls default to `noRefund=true`).
+- When generation fails, credits are **not** automatically refunded.
 - Set a reasonable polling timeout to avoid waiting indefinitely.
 :::
