@@ -19,22 +19,26 @@ skills/nano-banana-api/
 
 ## 安装到支持 skills.sh 的 agent
 
-仓库推送到 GitHub 后，可通过 `skills` CLI 从仓库安装指定 skill：
+仓库推送到 GitHub 后，可通过 `skills` CLI 从仓库安装：
 
 ```bash
-npx skills add https://github.com/zwluoqi/NanaBananaDoc --skill nano-banana-api --full-depth
+npx skills add https://github.com/zwluoqi/NanaBananaDoc
 ```
 
 如果使用 `owner/repo` 简写，也可以写成：
 
 ```bash
-npx skills add zwluoqi/NanaBananaDoc --skill nano-banana-api --full-depth
+npx skills add zwluoqi/NanaBananaDoc
 ```
+
+可选参数：
+
+- `-g, --global`：安装到全局目录 `~/.claude/skills/`（默认安装到当前项目）。
+- `-f, --force`：强制重新安装已存在的 skill。
+- `--skip-setup`：跳过安装后的 setup 脚本。
 
 说明：
 
-- `--skill nano-banana-api` 只安装当前 skill。
-- `--full-depth` 用于扫描仓库中的嵌套 `skills/` 目录。
 - `skills.sh` 主要基于 GitHub 仓库分发 skill，因此仓库必须先公开并推送成功。
 
 ## 本地直接使用
