@@ -19,22 +19,15 @@ skills/nano-banana-api/
 
 ## Install Into Agents That Support skills.sh
 
-After this repository is pushed to GitHub, install the skill from the repo with:
+After this repository is pushed to GitHub, install the skill with:
 
 ```bash
-npx skills add https://github.com/zwluoqi/NanaBananaDoc --skill nano-banana-api --full-depth
-```
-
-The `owner/repo` shorthand also works:
-
-```bash
-npx skills add zwluoqi/NanaBananaDoc --skill nano-banana-api --full-depth
+npx skills add https://github.com/zwluoqi/NanaBananaDoc/tree/main/skills/nano-banana-api
 ```
 
 Notes:
 
-- `--skill nano-banana-api` installs only this skill.
-- `--full-depth` scans nested `skills/` directories in the repository.
+- The URL must point to the skill subdirectory. Using the repo root URL causes a missing `SKILL.md` warning because the CLI treats the root as the skill directory.
 - `skills.sh` distribution depends on the GitHub repository being public and pushed successfully.
 
 ## Use Locally
