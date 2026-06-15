@@ -48,9 +48,12 @@ Live verification on 2026-03-25 returned model IDs including `gemini-2.5-flash-i
   "selectedModel": "Optional model id from /models",
   "referenceImageUrls": ["Optional image URL"],
   "aspectRatio": "Optional aspect ratio",
+  "quantity": 1,
   "mode": "sync | stream | async"
 }
 ```
+
+- `quantity`: optional number of images per call. Defaults to `1`, clamped to `[1, backend max]` (default max `4`). Credits scale with count (`unit cost × quantity`). Streaming models always emit a single image, so `quantity` is forced to `1`. When `quantity > 1`, `imageUrls` / `outputImageUrls` contain multiple URLs.
 
 #### Sync
 
@@ -142,6 +145,7 @@ Completion example:
 - `401 Unauthorized`: missing or invalid API key.
 - `402 Payment Required`: insufficient credits.
 - `403 Forbidden`: API access not enabled on the account.
+- `429 Too Many Requests`: per-account concurrency limit exceeded (default 1 concurrent request). Body includes `type: "concurrency_limit"`, `limit`, `active`; response carries `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Active` headers for backoff.
 - `500 Internal Server Error`: server-side failure.
 - `503 Service Unavailable`: server busy. Docs note this is specific to async queue saturation.
 

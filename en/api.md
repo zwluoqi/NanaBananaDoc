@@ -49,10 +49,18 @@ Generate an image. Supports text-to-image and image-to-image modes, with three r
 | `selectedModel` | `string` | - | Model name, defaults to `"nano-banana"` |
 | `referenceImageUrls` | `string[]` | **\*** | Reference image URL array (required for image-to-image) |
 | `aspectRatio` | `string` | - | Aspect ratio, defaults to `"default"` |
+| `quantity` | `number` | - | Number of images per call, defaults to `1`, range `1`–backend limit (default max `4`) |
 | `mode` | `string` | - | Request mode: `"sync"` (default), `"stream"`, `"async"` |
 
 ::: tip
 The system automatically determines the generation type (text-to-image / image-to-image) based on whether `referenceImageUrls` is provided.
+:::
+
+::: tip About `quantity` (batch generation)
+- The value is clamped to `1`–backend limit (default max `4`); out-of-range values are truncated automatically.
+- Credits scale with the count: `total = unit cost × quantity` (image-to-image extra-image fees are included in the unit cost).
+- Streaming models emit a single image per call, so `quantity` is forced to `1`.
+- When `quantity > 1`, results are returned as arrays (`imageUrls` / `outputImageUrls` contain multiple URLs).
 :::
 
 ### Three Request Modes
@@ -152,14 +160,32 @@ Query the current account's available credit balance.
 | `401 Unauthorized` | Invalid or missing API Key |
 | `402 Payment Required` | Insufficient credits |
 | `403 Forbidden` | API access is not enabled for the account |
+| `429 Too Many Requests` | Account concurrency limit exceeded (each account allows only 1 concurrent request by default) |
 | `500 Internal Server Error` | Internal server error |
 | `503 Service Unavailable` | Server busy (async mode only) |
+
+::: details `429` concurrency limit response example
+The number of concurrent API requests per account is limited (default `1`, adjustable by the backend). When exceeded, it returns:
+
+```json
+{
+  "error": "Too many concurrent API requests for this account",
+  "type": "concurrency_limit",
+  "limit": 1,
+  "active": 1
+}
+```
+
+The response carries `Retry-After`, `X-RateLimit-Limit`, and `X-RateLimit-Active` headers for backoff.
+:::
 
 ## 7. Important Notes
 
 - API calls do not perform safety keyword checks. Please ensure your input content is compliant.
 - Credits consumed per generation depend on the selected model. The default model costs 1 credit.
 - In image-to-image mode, each additional reference image costs 1 extra credit.
+- Use `quantity` to generate multiple images per call; credits scale with the count, while streaming models are fixed to 1 image.
+- The number of concurrent API requests per account is limited (default 1, adjustable by the backend); exceeding it returns `429`.
 - Generated image URLs are valid for 15 days. Please download and save them promptly.
 - Each user can create up to 5 API Keys.
 - API access must be enabled for your account (automatically enabled when cumulative recharge exceeds ¥1000, or contact admin for manual activation).

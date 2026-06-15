@@ -264,6 +264,8 @@ def build_generation_body(args: argparse.Namespace) -> dict[str, Any]:
         body["aspectRatio"] = args.aspect_ratio
     if args.reference_image_url:
         body["referenceImageUrls"] = args.reference_image_url
+    if args.quantity and args.quantity > 1:
+        body["quantity"] = args.quantity
     if args.mode != "sync":
         body["mode"] = args.mode
     return body
@@ -352,6 +354,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--reference-image-url",
         action="append",
         help="Reference image URL. Repeat the flag for multiple images.",
+    )
+    generate_parser.add_argument(
+        "--quantity",
+        type=int,
+        help="Number of images to generate (default 1, clamped to the backend max). Ignored by streaming models.",
     )
     generate_parser.add_argument(
         "--wait",

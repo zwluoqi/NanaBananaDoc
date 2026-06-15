@@ -49,10 +49,18 @@ https://www.nananobanana.com/api/v1
 | `selectedModel` | `string` | - | 模型名称，默认 `"nano-banana"` |
 | `referenceImageUrls` | `string[]` | **\*** | 参考图片 URL 数组（图生图时必填） |
 | `aspectRatio` | `string` | - | 宽高比，默认 `"default"` |
+| `quantity` | `number` | - | 单次生成的图片数量，默认 `1`，取值范围 `1` ~ 后台配置上限（默认最大 `4`） |
 | `mode` | `string` | - | 请求方式：`"sync"`（默认）、`"stream"`、`"async"` |
 
 ::: tip
 系统会根据是否传入 `referenceImageUrls` 自动判断生成类型（文生图 / 图生图），无需手动指定。
+:::
+
+::: tip 关于 `quantity`（批量生成）
+- 取值会被限制在 `1` 到后台配置上限之间（默认最大 `4`），超出会自动截断。
+- 消耗积分按张数累计：`总积分 = 单张积分 × quantity`（图生图的多图附加费用也会计入单张积分）。
+- 流式（streaming）模型每次只产出 1 张，传入的 `quantity` 会被强制为 `1`。
+- 当 `quantity > 1` 时，结果以数组形式返回（`imageUrls` / `outputImageUrls` 包含多张）。
 :::
 
 ### 三种请求方式
@@ -152,14 +160,32 @@ https://www.nananobanana.com/api/v1
 | `401 Unauthorized` | API Key 无效或缺失 |
 | `402 Payment Required` | 积分不足 |
 | `403 Forbidden` | 账户未开通 API 访问权限 |
+| `429 Too Many Requests` | 账户并发请求超限（每个账户默认仅允许 1 个并发请求） |
 | `500 Internal Server Error` | 服务器内部错误 |
 | `503 Service Unavailable` | 服务器繁忙（仅异步模式） |
+
+::: details `429` 并发限制响应示例
+单个账户的 API 并发请求数受限（默认 `1`，可由后台调整）。超限时返回：
+
+```json
+{
+  "error": "Too many concurrent API requests for this account",
+  "type": "concurrency_limit",
+  "limit": 1,
+  "active": 1
+}
+```
+
+响应头会带上 `Retry-After`、`X-RateLimit-Limit`、`X-RateLimit-Active`，可据此重试。
+:::
 
 ## 7. 注意事项
 
 - API 调用不进行安全关键词检查，请确保输入内容合规。
 - 每次生成消耗的积分取决于选择的模型，默认模型消耗 1 积分。
 - 图生图模式中，每增加一张参考图片额外消耗 1 积分。
+- 可通过 `quantity` 一次生成多张图片，积分按张数累计；流式模型固定每次 1 张。
+- 每个账户的 API 并发请求数受限（默认 1 个，可由后台调整），超限返回 `429`。
 - 生成的图片 URL 有效期为 15 天，请及时下载保存。
 - 每个用户最多可创建 5 个 API Key。
 - 需要账户开通 API 访问权限后才能调用（累计充值满 ¥1000 自动开通，或联系管理员手动开通）。
